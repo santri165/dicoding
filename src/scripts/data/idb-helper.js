@@ -4,6 +4,7 @@ const DATABASE_NAME = 'tobingstory-db';
 const DATABASE_VERSION = 1;
 const STORE_NAME_STORIES = 'stories';
 const STORE_NAME_SYNC = 'sync-stories';
+const STORE_NAME_SAVED = 'saved-stories';
 
 const dbPromise = openDB(DATABASE_NAME, DATABASE_VERSION, {
   upgrade(db) {
@@ -15,6 +16,9 @@ const dbPromise = openDB(DATABASE_NAME, DATABASE_VERSION, {
     }
     if (!db.objectStoreNames.contains('auth')) {
       db.createObjectStore('auth');
+    }
+    if (!db.objectStoreNames.contains(STORE_NAME_SAVED)) {
+      db.createObjectStore(STORE_NAME_SAVED, { keyPath: 'id' });
     }
   },
 });
@@ -54,6 +58,19 @@ const idbHelper = {
     const tx = db.transaction(STORE_NAME_SYNC, 'readwrite');
     await tx.store.clear();
     await tx.done;
+  },
+
+  // For Saved/Favorite Stories
+  async getAllSavedStories() {
+    return (await dbPromise).getAll(STORE_NAME_SAVED);
+  },
+
+  async putSavedStory(story) {
+    return (await dbPromise).put(STORE_NAME_SAVED, story);
+  },
+
+  async deleteSavedStory(id) {
+    return (await dbPromise).delete(STORE_NAME_SAVED, id);
   },
 
   async setToken(token) {

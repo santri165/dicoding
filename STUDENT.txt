@@ -1,2 +1,2 @@
-APP_URL=<url_aplikasi>
+APP_URL=https://santri165.github.io/dicoding/
 MAP_SERVICE_API_KEY=No API Key Required (Using OpenStreetMap and CARTO bounds)

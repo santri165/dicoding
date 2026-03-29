@@ -93,8 +93,24 @@ const HomePage = {
           <h3 class="story-author">${story.name}</h3>
           <p class="story-date"><time datetime="${story.createdAt}">${dateStr}</time></p>
           <p class="story-desc">${story.description}</p>
+          <button class="btn btn-save" style="margin-top: 10px; padding: 5px 10px; font-size: 0.9rem;">Simpan</button>
         </div>
       `;
+
+      const saveBtn = storyItem.querySelector('.btn-save');
+      if (saveBtn) {
+        saveBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          await idbHelper.putSavedStory(story);
+          Swal.fire({
+            icon: 'success',
+            title: 'Tersimpan!',
+            text: 'Cerita berhasil disimpan ke halaman favorit',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        });
+      }
 
       storyItem.addEventListener('click', () => {
         if (story.lat && story.lon) {
