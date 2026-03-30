@@ -12,7 +12,11 @@ const API_BASE_URL = 'https://story-api.dicoding.dev/v1';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
+    caches.open(CACHE_NAME).then((cache) => {
+      return Promise.allSettled(
+        ASSETS_TO_CACHE.map(url => cache.add(url).catch(err => console.warn('SW Pre-cache missing file:', url, err)))
+      );
+    })
   );
   self.skipWaiting();
 });
