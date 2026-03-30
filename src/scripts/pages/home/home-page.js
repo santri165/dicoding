@@ -18,7 +18,9 @@ const HomePage = {
             <div class="list-header">
               <h2>Recent Updates</h2>
               <div class="list-filters">
+                <label for="search-input" style="display:none;">Search stories</label>
                 <input type="text" id="search-input" placeholder="Search stories..." aria-label="Search stories" />
+                <label for="sort-select" style="display:none;">Sort stories</label>
                 <select id="sort-select" aria-label="Sort stories">
                   <option value="newest">Newest First</option>
                   <option value="oldest">Oldest First</option>

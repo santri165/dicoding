@@ -125,6 +125,14 @@ class AboutPage {
             userVisibleOnly: true,
             applicationServerKey: this._urlBase64ToUint8Array('BCCs2eonMI-6H2ctvFaWg-UYdDv387Vno_bzUzALpB442r2lCnsHmtrx8biyPi_E-1fSGABK_Qs_GlvPoJJqxbk'),
           });
+          
+          try {
+            const Api = (await import('../../networks/api')).default;
+            await Api.subscribePushNotification(newSub);
+          } catch(apiErr) {
+            console.error('Failed to sync push subscription to server:', apiErr);
+          }
+
           updateUI(newSub);
           console.log('Push Subscription:', JSON.stringify(newSub));
         }

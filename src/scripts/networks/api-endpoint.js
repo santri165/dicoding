@@ -6,6 +6,7 @@ const API_ENDPOINT = {
   STORIES: `${CONFIG.BASE_URL}/stories`,
   ADD_STORY: `${CONFIG.BASE_URL}/stories`,
   DETAIL: (id) => `${CONFIG.BASE_URL}/stories/${id}`,
+  SUBSCRIBE_PUSH: `${CONFIG.BASE_URL}/notifications/subscribe`,
 };
 
 export default API_ENDPOINT;

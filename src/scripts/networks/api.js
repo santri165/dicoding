@@ -87,6 +87,23 @@ const Api = {
     }
     return responseJson;
   },
+
+  async subscribePushNotification(subscription) {
+    const response = await fetch(API_ENDPOINT.SUBSCRIBE_PUSH, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Auth.getToken()}`,
+      },
+      body: JSON.stringify(subscription),
+    });
+
+    const responseJson = await response.json();
+    if (responseJson.error) {
+      throw new Error(responseJson.message);
+    }
+    return responseJson;
+  },
 };
 
 export default Api;
