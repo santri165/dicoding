@@ -30,6 +30,15 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') {
+    return;
+  }
+  
+  // Skip cross-origin API requests to avoid CORS preflight caching bugs
+  if (event.request.url.includes('story-api.dicoding.dev')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((response) => response || fetch(event.request))
   );
