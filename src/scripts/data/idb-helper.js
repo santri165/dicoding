@@ -1,7 +1,7 @@
 import { openDB } from 'idb';
 
 const DATABASE_NAME = 'tobingstory-db';
-const DATABASE_VERSION = 1;
+const DATABASE_VERSION = 2;
 const STORE_NAME_STORIES = 'stories';
 const STORE_NAME_SYNC = 'sync-stories';
 const STORE_NAME_SAVED = 'saved-stories';
