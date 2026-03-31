@@ -128,7 +128,15 @@ class AboutPage {
           
           try {
             const Api = (await import('../../networks/api')).default;
-            await Api.subscribePushNotification(newSub);
+            const subscriptionJSON = newSub.toJSON();
+            const payload = {
+              endpoint: subscriptionJSON.endpoint,
+              keys: {
+                auth: subscriptionJSON.keys.auth,
+                p256dh: subscriptionJSON.keys.p256dh,
+              }
+            };
+            await Api.subscribePushNotification(payload);
           } catch(apiErr) {
             console.error('Failed to sync push subscription to server:', apiErr);
           }

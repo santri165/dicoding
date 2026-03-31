@@ -12,6 +12,13 @@ const FavoritePage = {
         
         <div class="dashboard-content">
           <div class="list-container" style="max-width: 800px; margin: 0 auto; width: 100%;">
+            <div class="list-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <h2>Daftar Favorit</h2>
+              <div class="list-filters">
+                <label for="search-input" style="display:none;">Cari cerita</label>
+                <input type="text" id="search-input" placeholder="Cari cerita..." aria-label="Cari cerita" style="padding: 10px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: white; width: 100%; max-width: 300px;" />
+              </div>
+            </div>
             <div id="favorite-list" class="story-list">
               <div class="loading-state">Memuat cerita favorit...</div>
             </div>
@@ -22,22 +29,52 @@ const FavoritePage = {
   },
 
   async afterRender() {
-    await this._renderFavorites();
+    this._stories = [];
+    this._filteredStories = [];
+    await this._fetchFavorites();
+    this._bindFilterEvents();
   },
 
-  async _renderFavorites() {
+  async _fetchFavorites() {
     const listContainer = document.querySelector('#favorite-list');
+    try {
+      this._stories = await idbHelper.getAllSavedStories() || [];
+      this._filteredStories = [...this._stories];
+      this._renderFavorites();
+    } catch (error) {
+      console.error(error);
+      if (listContainer) {
+        listContainer.innerHTML = '<p class="empty-state">Gagal memuat cerita favorit.</p>';
+      }
+    }
+  },
+
+  _bindFilterEvents() {
+    const searchInput = document.querySelector('#search-input');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+      this._filteredStories = this._stories.filter(s => 
+        s.name.toLowerCase().includes(query) || 
+        s.description.toLowerCase().includes(query)
+      );
+      this._renderFavorites();
+    });
+  },
+
+  _renderFavorites() {
+    const listContainer = document.querySelector('#favorite-list');
+    if (!listContainer) return;
+    
     listContainer.innerHTML = '';
     
-    try {
-      const stories = await idbHelper.getAllSavedStories();
-      
-      if (!stories || stories.length === 0) {
-        listContainer.innerHTML = '<p class="empty-state">Belum ada cerita yang disimpan.</p>';
-        return;
-      }
+    if (!this._filteredStories || this._filteredStories.length === 0) {
+      listContainer.innerHTML = '<p class="empty-state">Belum ada cerita yang disimpan.</p>';
+      return;
+    }
 
-      stories.forEach((story) => {
+    this._filteredStories.forEach((story) => {
         const dateStr = new Date(story.createdAt).toLocaleDateString();
         const storyItem = document.createElement('article');
         storyItem.classList.add('story-item');
@@ -63,16 +100,12 @@ const FavoritePage = {
               timer: 1500,
               showConfirmButton: false
             });
-            this._renderFavorites(); // re-render layout
+            await this._fetchFavorites(); // re-fetch and re-render
           });
         }
 
         listContainer.appendChild(storyItem);
       });
-    } catch (error) {
-      console.error(error);
-      listContainer.innerHTML = '<p class="empty-state">Gagal memuat cerita favorit.</p>';
-    }
   }
 };
 
