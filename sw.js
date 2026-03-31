@@ -133,28 +133,32 @@ function deleteFromStore(db, storeName, key) {
 
 // Push Notification
 self.addEventListener('push', (event) => {
-  let data = { title: 'Tobingstory', content: 'You have a new story update.' };
-  if (event.data) {
+  async function chainPromise() {
+    let data;
     try {
-      data = event.data.json();
+      data = await event.data.json();
     } catch (e) {
-      data = { title: 'Tobingstory', content: event.data.text() };
+      data = { title: 'Tobingstory', options: { body: event.data ? event.data.text() : 'You have a new story update.' } };
     }
+
+    const title = data.title || 'Tobingstory';
+    const body = data.options?.body || data.body || data.content || 'New story update!';
+    const notificationData = data.options?.data || data.data || {};
+
+    const options = {
+      body: body,
+      icon: '/favicon.png',
+      badge: '/favicon.png',
+      data: notificationData,
+      actions: [
+        { action: 'view', title: 'View Detail' }
+      ]
+    };
+
+    await self.registration.showNotification(title, options);
   }
 
-  const options = {
-    body: data.content || data.body || 'New story added!',
-    icon: '/favicon.png',
-    badge: '/favicon.png',
-    data: data.data || {},
-    actions: [
-      { action: 'view', title: 'View Detail' }
-    ]
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+  event.waitUntil(chainPromise());
 });
 
 self.addEventListener('notificationclick', (event) => {
